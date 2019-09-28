@@ -95,7 +95,7 @@ public class FrontFragment extends Fragment {
             }
         });
 
-        Button startButton = view.findViewById(R.id.startButton);
+        final Button startButton = view.findViewById(R.id.startButton);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,6 +111,7 @@ public class FrontFragment extends Fragment {
             @Override
             public void onChanged(Bitmap bitmap) {
                 frontImageView.setImageBitmap(bitmap);
+                startButton.setEnabled(bitmap != null);
             }
         };
         viewModel.getRawBitmap().observe(this, rawBitmapObserver);

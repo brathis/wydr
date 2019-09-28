@@ -23,6 +23,7 @@ import xyz.resizer.MainViewModel;
 import xyz.resizer.R;
 
 public class ResultFragment extends Fragment {
+
     static final String LOG_TAG = "ResultFragment";
 
     /**
@@ -83,7 +84,7 @@ public class ResultFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_result, container, false);
 
-        MainViewModel viewModel = ViewModelProviders.of(mainActivity).get(MainViewModel.class);
+        final MainViewModel viewModel = ViewModelProviders.of(mainActivity).get(MainViewModel.class);
 
         final Button shareButton = view.findViewById(R.id.shareButton);
         shareButton.setOnClickListener(new View.OnClickListener() {
@@ -112,7 +113,9 @@ public class ResultFragment extends Fragment {
             @Override
             public void onChanged(Bitmap bitmap) {
                 if (bitmap != null) {
+                    viewModel.setInProgress(false);
                     resultImageView.setImageBitmap(bitmap);
+                    resultImageView.setVisibility(View.VISIBLE);
                     resultProgressBar.setVisibility(View.GONE);
                     shareButton.setVisibility(View.VISIBLE);
                     restartButton.setVisibility(View.VISIBLE);
@@ -132,17 +135,21 @@ public class ResultFragment extends Fragment {
      */
     @Override
     public void onResume() {
-        MainActivity mainActivity = (MainActivity) requireActivity();
         super.onResume();
 
-        final Button shareButton = mainActivity.findViewById(R.id.shareButton);
-        final Button restartButton = mainActivity.findViewById(R.id.restartButton);
-        final ImageView resultImageView = mainActivity.findViewById(R.id.resultImageView);
-        final ProgressBar resultProgressBar = mainActivity.findViewById(R.id.resultProgressBar);
+        MainActivity mainActivity = (MainActivity) requireActivity();
+        MainViewModel viewModel = ViewModelProviders.of(mainActivity).get(MainViewModel.class);
+        if (viewModel.isInProgress()) {
+            final Button shareButton = mainActivity.findViewById(R.id.shareButton);
+            final Button restartButton = mainActivity.findViewById(R.id.restartButton);
+            final ImageView resultImageView = mainActivity.findViewById(R.id.resultImageView);
+            final ProgressBar resultProgressBar = mainActivity.findViewById(R.id.resultProgressBar);
 
-        shareButton.setVisibility(View.GONE);
-        restartButton.setVisibility(View.GONE);
-        resultImageView.setImageBitmap(null);
-        resultProgressBar.setVisibility(View.VISIBLE);
+            shareButton.setVisibility(View.GONE);
+            restartButton.setVisibility(View.GONE);
+            resultImageView.setImageResource(android.R.color.transparent);
+            resultImageView.setVisibility(View.INVISIBLE);
+            resultProgressBar.setVisibility(View.VISIBLE);
+        }
     }
 }

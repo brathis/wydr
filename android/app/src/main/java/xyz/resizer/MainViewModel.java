@@ -14,6 +14,7 @@ public class MainViewModel extends ViewModel {
 
     private MutableLiveData<Bitmap> rawBitmap = new MutableLiveData<>();
     private MutableLiveData<Bitmap> processedBitmap = new MutableLiveData<>();
+    private boolean inProgress = false;
 
     public void loadRawBitmap(ContentResolver contentResolver, Uri uri) throws IOException {
         Bitmap bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri);
@@ -28,8 +29,17 @@ public class MainViewModel extends ViewModel {
         return processedBitmap;
     }
 
+    public boolean isInProgress() {
+        return inProgress;
+    }
+
+    public void setInProgress(boolean inProgress) {
+        this.inProgress = inProgress;
+    }
+
     public void reset() {
         rawBitmap.setValue(null);
         processedBitmap.setValue(null);
+        inProgress = false;
     }
 }

@@ -59,9 +59,6 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(mainFragmentPagerAdapter);
 
         viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(MainViewModel.class);
-
-        // Prompt user to select image
-        createChooseImageIntent();
     }
 
     /**
@@ -127,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startConversion() {
+        viewModel.setInProgress(true);
+
         // start the task
         ImageResizerTask imageResizerTask = new WebServiceImageResizerTask(getApplicationContext());
         ImageResizerTaskParams taskParams = new ImageResizerTaskParams(viewModel.getRawBitmap().getValue(),
