@@ -17,6 +17,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import xyz.resizer.MainActivity;
+import xyz.resizer.MainFragmentPagerAdapter;
 import xyz.resizer.MainViewModel;
 import xyz.resizer.R;
 
@@ -100,7 +101,7 @@ public class FrontFragment extends Fragment {
             public void onClick(View v) {
                 Log.d(LOG_TAG, "Start button clicked");
 
-                mainActivity.transitionToFragment(MainFragmentPagerAdapter.ROTATE_CROP_FRAGMENT);
+                mainActivity.startConversion();
             }
         });
 

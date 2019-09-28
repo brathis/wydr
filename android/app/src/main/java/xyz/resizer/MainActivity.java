@@ -17,10 +17,11 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
+import com.yalantis.ucrop.UCrop;
+
 import java.io.File;
 import java.io.IOException;
 
-import xyz.resizer.fragment.MainFragmentPagerAdapter;
 import xyz.resizer.service.ImageResizerTask;
 import xyz.resizer.service.ImageResizerTaskParams;
 import xyz.resizer.service.WebServiceImageResizerTask;
@@ -72,16 +73,37 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_SELECT_IMAGE) {
             if (resultCode == RESULT_OK && data != null && data.getData() != null) {
                 Uri imageUri = data.getData();
+                Uri editedUri = Uri.fromFile(new File(getCacheDir(), "cropped.png"));
+
+                // Start uCrop
+                UCrop uCrop = UCrop.of(imageUri, editedUri);
+                uCrop.start(this);
+            } else {
+                Log.e(LOG_TAG, "Failed to select image");
+                Toast.makeText(getApplicationContext(), "Failed to select image", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == UCrop.REQUEST_CROP) {
+            if (resultCode == RESULT_OK) {
+                Log.d(LOG_TAG, "Cropping successful");
+                final Uri resultUri = UCrop.getOutput(data);
+
                 try {
                     // Load bitmap and save in view model
-                    viewModel.loadRawBitmap(getContentResolver(), imageUri);
+                    viewModel.loadRawBitmap(getContentResolver(), resultUri);
+
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "Failed to load Bitmap", e);
                     Toast.makeText(getApplicationContext(), "Failed to open image", Toast.LENGTH_SHORT).show();
                 }
+
+            } else if (resultCode == UCrop.RESULT_ERROR) {
+                final Throwable cropError = UCrop.getError(data);
+                Log.e(LOG_TAG, "UCrop exited with error", cropError);
+                Toast.makeText(getApplicationContext(), "Editing image failed", Toast.LENGTH_SHORT).show();
             }
         }
     }

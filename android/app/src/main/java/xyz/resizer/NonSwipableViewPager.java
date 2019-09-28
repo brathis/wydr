@@ -1,4 +1,4 @@
-package xyz.resizer.fragment;
+package xyz.resizer;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -1,24 +1,24 @@
-package xyz.resizer.fragment;
+package xyz.resizer;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import xyz.resizer.fragment.FrontFragment;
+import xyz.resizer.fragment.ResultFragment;
+
 public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
 
     FrontFragment frontFragment;
-    RotateCropFragment rotateCropFragment;
     ResultFragment resultFragment;
 
     public static final int FRONT_FRAGMENT = 0;
-    public static final int ROTATE_CROP_FRAGMENT = 1;
-    public static final int RESULT_FRAGMENT = 2;
+    public static final int RESULT_FRAGMENT = 1;
 
     public MainFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
 
         frontFragment = new FrontFragment();
-        rotateCropFragment = new RotateCropFragment();
         resultFragment = new ResultFragment();
     }
 
@@ -32,8 +32,6 @@ public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
         switch (position) {
             case FRONT_FRAGMENT:
                 return frontFragment;
-            case ROTATE_CROP_FRAGMENT:
-                return rotateCropFragment;
             case RESULT_FRAGMENT:
                 return resultFragment;
             default:
@@ -46,6 +44,6 @@ public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
      */
     @Override
     public int getCount() {
-        return 3;
+        return 2;
     }
 }

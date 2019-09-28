@@ -6,7 +6,6 @@
     <string name="result_image_description">The processed image</string>
     <string name="choose_button_text">Choose</string>
     <string name="start_button_text">Start</string>
-    <string name="convert_button_text">Convert</string>
     <string name="share_button_text">Share</string>
     <string name="restart_button_text">Convert new image</string>
 </resources>

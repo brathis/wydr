@@ -18,6 +18,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import xyz.resizer.MainActivity;
+import xyz.resizer.MainFragmentPagerAdapter;
 import xyz.resizer.MainViewModel;
 import xyz.resizer.R;
 
@@ -50,8 +51,8 @@ public class ResultFragment extends Fragment {
         OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                // Back to RotateCropFragment
-                mainActivity.transitionToFragment(MainFragmentPagerAdapter.ROTATE_CROP_FRAGMENT);
+                // Back to FrontFragment
+                mainActivity.transitionToFragment(MainFragmentPagerAdapter.FRONT_FRAGMENT);
             }
         };
         mainActivity.getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
