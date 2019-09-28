@@ -60,9 +60,9 @@ def combine_images(left_panel, im, right_panel):
     for x in images:
         new_im.paste(x, (x_offset,0))
         x_offset += x.size[0]
-
-    # return new_im
     #new_im.show()
+    return new_im
+    
 
 if __name__ == '__main__':
     im = Image.open('test.png')
