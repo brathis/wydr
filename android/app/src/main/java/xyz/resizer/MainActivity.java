@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
     private MainFragmentPagerAdapter mainFragmentPagerAdapter;
 
+    ViewPager viewPager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         // Set up layout & fragments
         setContentView(R.layout.activity_main);
         mainFragmentPagerAdapter = new MainFragmentPagerAdapter(getSupportFragmentManager());
-        ViewPager viewPager = findViewById(R.id.pager);
+        viewPager = findViewById(R.id.pager);
         viewPager.setAdapter(mainFragmentPagerAdapter);
 
         viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(MainViewModel.class);
@@ -90,6 +92,9 @@ public class MainActivity extends AppCompatActivity {
         ImageResizerTaskParams taskParams = new ImageResizerTaskParams(viewModel.getRawBitmap().getValue(),
                 viewModel.getProcessedBitmap());
         imageResizerTask.execute(taskParams);
+
+        // switch to the result fragment
+        viewPager.setCurrentItem(MainFragmentPagerAdapter.RESULT_FRAGMENT);
     }
 
     public void shareButtonClicked(View view) {

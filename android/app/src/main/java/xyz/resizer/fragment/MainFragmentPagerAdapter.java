@@ -9,6 +9,9 @@ public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
     FrontFragment frontFragment;
     ResultFragment resultFragment;
 
+    public static final int FRONT_FRAGMENT = 0;
+    public static final int RESULT_FRAGMENT = 1;
+
     public MainFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
 
@@ -24,9 +27,9 @@ public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0:
+            case FRONT_FRAGMENT:
                 return frontFragment;
-            case 1:
+            case RESULT_FRAGMENT:
                 return resultFragment;
             default:
                 throw new RuntimeException("Invalid fragment position: " + position);
