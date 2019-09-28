@@ -78,7 +78,7 @@ public class ResultFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final MainActivity mainActivity = (MainActivity) getActivity();
+        final MainActivity mainActivity = (MainActivity) requireActivity();
 
         View view = inflater.inflate(R.layout.fragment_result, container, false);
 
@@ -121,5 +121,27 @@ public class ResultFragment extends Fragment {
         viewModel.getProcessedBitmap().observe(this, processedBitmapObserver);
 
         return view;
+    }
+
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * This is generally
+     * tied to {@link Activity#onResume() Activity.onResume} of the containing
+     * Activity's lifecycle.
+     */
+    @Override
+    public void onResume() {
+        MainActivity mainActivity = (MainActivity) requireActivity();
+        super.onResume();
+
+        final Button shareButton = mainActivity.findViewById(R.id.shareButton);
+        final Button restartButton = mainActivity.findViewById(R.id.restartButton);
+        final ImageView resultImageView = mainActivity.findViewById(R.id.resultImageView);
+        final ProgressBar resultProgressBar = mainActivity.findViewById(R.id.resultProgressBar);
+
+        shareButton.setVisibility(View.GONE);
+        restartButton.setVisibility(View.GONE);
+        resultImageView.setImageBitmap(null);
+        resultProgressBar.setVisibility(View.VISIBLE);
     }
 }

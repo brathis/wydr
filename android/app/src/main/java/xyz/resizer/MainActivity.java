@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startOver() {
+        viewModel.reset();
         viewPager.setCurrentItem(MainFragmentPagerAdapter.FRONT_FRAGMENT);
-        // TODO: Re-initialize the individual fragments? Is there a lifecycle method?
     }
 }

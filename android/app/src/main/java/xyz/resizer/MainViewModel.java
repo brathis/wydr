@@ -27,4 +27,9 @@ public class MainViewModel extends ViewModel {
     public MutableLiveData<Bitmap> getProcessedBitmap() {
         return processedBitmap;
     }
+
+    public void reset() {
+        rawBitmap.setValue(null);
+        processedBitmap.setValue(null);
+    }
 }
