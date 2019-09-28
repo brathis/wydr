@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image
 import sys
 import math
-
+ 
 
 def flip_image(image):
     """
@@ -20,13 +20,18 @@ def flip_image(image):
     # mirror.show()
     return mirror
 
-   
+# if __name__ == '__main__':
+#     image = 'mantis.png'
+#     flip_image(image, 'flipped_mantis.jpg')
+
+
 def side_panel_width(image):
     width, height = image.size
     targetwidth = height*0.8
     #Vertical Image:  1080px in width by 1350px in height = 0.8 = 8:10
     side_panel_width = math.ceil((targetwidth-width) /2)
     return side_panel_width
+
 
 
 def left_panel(mirrored, width, height, side_panel_width):
@@ -60,21 +65,22 @@ def combine_images(left_panel, im, right_panel):
     for x in images:
         new_im.paste(x, (x_offset,0))
         x_offset += x.size[0]
-    #new_im.show()
-    return new_im
-    
 
+    return new_im
+    # new_im.show()
+    # new_im.save('mirror.png', 'PNG')
+        
 if __name__ == '__main__':
     im = Image.open('test.png')
+
     mi = flip_image(im)
     width, height = im.size
     panel_width = side_panel_width(im)
-    l = left_panel(mi, width, panel_width)
-    r = right_panel(mi, width, panel_width)
+    l = left_panel(mi, width, height, panel_width)
+    r = right_panel(mi, width, height, panel_width)
 
     combine_images(l, im, r)
     
-
 
 
 
