@@ -11,10 +11,9 @@ import androidx.lifecycle.MutableLiveData;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import xyz.resizer.R;
 
@@ -60,7 +59,7 @@ public class WebServiceImageResizerTask extends ImageResizerTask {
     @Override
     protected ImageResizerTaskResult doInBackground(ImageResizerTaskParams... params) {
         InputStream stream;
-        HttpsURLConnection connection = null;
+        HttpURLConnection connection = null;
         ImageResizerTaskResult result = new ImageResizerTaskResult();
 
         if (params.length != 1) {
@@ -81,7 +80,7 @@ public class WebServiceImageResizerTask extends ImageResizerTask {
         result.setBitmap(bitmap);
 
         try {
-            connection = (HttpsURLConnection) webServiceUrl.openConnection();
+            connection = (HttpURLConnection) webServiceUrl.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
