@@ -29,7 +29,7 @@ def side_panel_width(image):
     return side_panel_width
 
 
-def left_panel(mirrored, width, side_panel_width):
+def left_panel(mirrored, width, height, side_panel_width):
     left = width-side_panel_width
     top = 0
     right = width
@@ -38,7 +38,7 @@ def left_panel(mirrored, width, side_panel_width):
     return left_panel
 
 
-def right_panel(mirrored, width, side_panel_width):
+def right_panel(mirrored, width, height, side_panel_width):
     left = 0
     top = 0
     right = side_panel_width
