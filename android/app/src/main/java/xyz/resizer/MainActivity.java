@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_SELECT_IMAGE) {
             if (resultCode == RESULT_OK && data != null && data.getData() != null) {
                 Uri imageUri = data.getData();
-                Uri editedUri = Uri.fromFile(new File(getCacheDir(), "cropped.png"));
+                Uri editedUri = Uri.fromFile(new File(getCacheDir(), "edited_temp"));
 
                 // Start uCrop
                 UCrop uCrop = UCrop.of(imageUri, editedUri);
@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String saveProcessedBitmap() {
         Bitmap processedBitmap = viewModel.getProcessedBitmap().getValue();
+
         // TODO: Title and description
         String url = MediaStore.Images.Media.insertImage(getContentResolver(), processedBitmap, "FOO", "BAR");
         if (url == null) {
@@ -144,20 +145,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void startSharing() {
         String url = saveProcessedBitmap();
-        createInstagramIntent(MIME_TYPE, url);
+        createInstagramIntent(url);
     }
 
-    private void createInstagramIntent(String type, String mediaPath) {
+    private void createInstagramIntent(String mediaPath) {
 
         // Create the new Intent using the 'Send' action.
         Intent share = new Intent(Intent.ACTION_SEND);
 
         // Set the MIME type
-        share.setType(type);
+        share.setType(MIME_TYPE);
 
-        // Create the URI from the media
-        File media = new File(mediaPath);
-        Uri uri = Uri.fromFile(media);
+        // Create a URI from the string
+        Uri uri = Uri.parse(mediaPath);
 
         // Add the URI to the Intent.
         share.putExtra(Intent.EXTRA_STREAM, uri);
