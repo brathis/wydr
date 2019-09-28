@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,7 +50,7 @@ public class ResultFragment extends Fragment {
 
         MainViewModel viewModel = ViewModelProviders.of(mainActivity).get(MainViewModel.class);
 
-        Button shareButton = view.findViewById(R.id.shareButton);
+        final Button shareButton = view.findViewById(R.id.shareButton);
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,10 +62,15 @@ public class ResultFragment extends Fragment {
 
         // Set up observer for processed bitmap
         final ImageView resultImageView = view.findViewById(R.id.resultImageView);
+        final ProgressBar resultProgressBar = view.findViewById(R.id.resultProgressBar);
         Observer<Bitmap> processedBitmapObserver = new Observer<Bitmap>() {
             @Override
             public void onChanged(Bitmap bitmap) {
-                resultImageView.setImageBitmap(bitmap);
+                if (bitmap != null) {
+                    resultImageView.setImageBitmap(bitmap);
+                    resultProgressBar.setVisibility(View.GONE);
+                    shareButton.setVisibility(View.VISIBLE);
+                }
             }
         };
         viewModel.getProcessedBitmap().observe(this, processedBitmapObserver);
