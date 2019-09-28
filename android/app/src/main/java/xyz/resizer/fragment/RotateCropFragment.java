@@ -1,27 +1,22 @@
 package xyz.resizer.fragment;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import xyz.resizer.MainActivity;
-import xyz.resizer.MainViewModel;
 import xyz.resizer.R;
 
-public class FrontFragment extends Fragment {
+public class RotateCropFragment extends Fragment {
 
-    static final String LOG_TAG = "FrontFragment";
+    static final String LOG_TAG = "RotateCropFragment";
 
     /**
      * Called to have the fragment instantiate its user interface view.
@@ -45,41 +40,16 @@ public class FrontFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final MainActivity mainActivity = (MainActivity) getActivity();
-
-        final View view = inflater.inflate(R.layout.fragment_front, container, false);
-
-        final MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-
-        Button convertButton = view.findViewById(R.id.chooseButton);
+        View view = inflater.inflate(R.layout.fragment_rotate_crop, container, false);
+        Button convertButton = view.findViewById(R.id.convertButton);
         convertButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(LOG_TAG, "Choose button clicked");
+                Log.d(LOG_TAG, "Convert button clicked");
 
-                mainActivity.startChoosing();
+                mainActivity.startConversion();
             }
         });
-
-        Button startButton = view.findViewById(R.id.startButton);
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(LOG_TAG, "Start button clicked");
-
-                mainActivity.transitionToFragment(MainFragmentPagerAdapter.ROTATE_CROP_FRAGMENT);
-            }
-        });
-
-        // Set up observer for raw bitmap to update frontImageView
-        final ImageView frontImageView = view.findViewById(R.id.frontImageView);
-        final Observer<Bitmap> rawBitmapObserver = new Observer<Bitmap>() {
-            @Override
-            public void onChanged(Bitmap bitmap) {
-                frontImageView.setImageBitmap(bitmap);
-            }
-        };
-        viewModel.getRawBitmap().observe(this, rawBitmapObserver);
-
         return view;
     }
 }

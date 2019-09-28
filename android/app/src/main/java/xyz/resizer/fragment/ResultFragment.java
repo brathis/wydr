@@ -1,17 +1,27 @@
 package xyz.resizer.fragment;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
+import xyz.resizer.MainActivity;
+import xyz.resizer.MainViewModel;
 import xyz.resizer.R;
 
 public class ResultFragment extends Fragment {
+    static final String LOG_TAG = "ResultFragment";
+
     /**
      * Called to have the fragment instantiate its user interface view.
      * This is optional, and non-graphical fragments can return null (which
@@ -33,6 +43,32 @@ public class ResultFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_result, container, false);
+        final MainActivity mainActivity = (MainActivity) getActivity();
+
+        View view = inflater.inflate(R.layout.fragment_result, container, false);
+
+        MainViewModel viewModel = ViewModelProviders.of(mainActivity).get(MainViewModel.class);
+
+        Button shareButton = view.findViewById(R.id.shareButton);
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(LOG_TAG, "Share button clicked");
+
+                mainActivity.startSharing();
+            }
+        });
+
+        // Set up observer for processed bitmap
+        final ImageView resultImageView = view.findViewById(R.id.resultImageView);
+        Observer<Bitmap> processedBitmapObserver = new Observer<Bitmap>() {
+            @Override
+            public void onChanged(Bitmap bitmap) {
+                resultImageView.setImageBitmap(bitmap);
+            }
+        };
+        viewModel.getProcessedBitmap().observe(this, processedBitmapObserver);
+
+        return view;
     }
 }

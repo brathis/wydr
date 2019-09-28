@@ -82,7 +82,7 @@ public class WebServiceImageResizerTask extends ImageResizerTask {
         try {
             connection = (HttpURLConnection) webServiceUrl.openConnection();
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "image/csv");
+            connection.setRequestProperty("Content-Type", "image/png");
             connection.setDoOutput(true);
             DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
             bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
@@ -90,7 +90,7 @@ public class WebServiceImageResizerTask extends ImageResizerTask {
             outputStream.close();
 
             result.setStatus(ImageResizerTaskResult.Status.RUNNING);
-            Log.d(LOG_TAG, "Sending CSV to server");
+            Log.d(LOG_TAG, "POSTing PNG to server");
             connection.connect();
 
             stream = connection.getInputStream();

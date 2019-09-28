@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -18,6 +17,7 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
+import java.io.File;
 import java.io.IOException;
 
 import xyz.resizer.fragment.MainFragmentPagerAdapter;
@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     static final int REQUEST_SELECT_IMAGE = 1;
 
     static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE = 2;
+
+    static final String MIME_TYPE = "image/*";
 
     private MainViewModel viewModel;
 
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(MainViewModel.class);
 
         // Prompt user to select image
-        startChooseImageActivity();
+        createChooseImageIntent();
     }
 
     /**
@@ -84,38 +86,65 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void convertButtonClicked(View view) {
-        Log.d(LOG_TAG, "Convert button clicked");
-
-        // start the task
-        ImageResizerTask imageResizerTask = new WebServiceImageResizerTask(getApplicationContext());
-        ImageResizerTaskParams taskParams = new ImageResizerTaskParams(viewModel.getRawBitmap().getValue(),
-                viewModel.getProcessedBitmap());
-        imageResizerTask.execute(taskParams);
-
-        // switch to the result fragment
-        viewPager.setCurrentItem(MainFragmentPagerAdapter.RESULT_FRAGMENT);
-    }
-
-    public void shareButtonClicked(View view) {
-        // TODO: Launch the share intent
-        Log.d(LOG_TAG, "Share button clicked");
-
-        saveProcessedBitmap(viewModel.getProcessedBitmap().getValue());
-    }
-
-    protected void saveProcessedBitmap(Bitmap processedBitmap) {
+    private String saveProcessedBitmap() {
+        Bitmap processedBitmap = viewModel.getProcessedBitmap().getValue();
+        // TODO: Title and description
         String url = MediaStore.Images.Media.insertImage(getContentResolver(), processedBitmap, "FOO", "BAR");
         if (url == null) {
             Log.e(LOG_TAG, "Failed to store processed image");
         } else {
             Log.d(LOG_TAG, "Stored image to " + url);
         }
+
+        return url;
     }
 
-    protected void startChooseImageActivity() {
+    public void startChoosing() {
+        createChooseImageIntent();
+    }
+
+    public void startConversion() {
+        // start the task
+        ImageResizerTask imageResizerTask = new WebServiceImageResizerTask(getApplicationContext());
+        ImageResizerTaskParams taskParams = new ImageResizerTaskParams(viewModel.getRawBitmap().getValue(),
+                viewModel.getProcessedBitmap());
+        imageResizerTask.execute(taskParams);
+
+        // switch to the rotate / crop fragment
+        viewPager.setCurrentItem(MainFragmentPagerAdapter.RESULT_FRAGMENT);
+    }
+
+    private void createChooseImageIntent() {
         Intent imageSelectIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        imageSelectIntent.setType("image/*");
+        imageSelectIntent.setType(MIME_TYPE);
         startActivityForResult(imageSelectIntent, REQUEST_SELECT_IMAGE);
+    }
+
+    public void startSharing() {
+        String url = saveProcessedBitmap();
+        createInstagramIntent(MIME_TYPE, url);
+    }
+
+    private void createInstagramIntent(String type, String mediaPath) {
+
+        // Create the new Intent using the 'Send' action.
+        Intent share = new Intent(Intent.ACTION_SEND);
+
+        // Set the MIME type
+        share.setType(type);
+
+        // Create the URI from the media
+        File media = new File(mediaPath);
+        Uri uri = Uri.fromFile(media);
+
+        // Add the URI to the Intent.
+        share.putExtra(Intent.EXTRA_STREAM, uri);
+
+        // Broadcast the Intent.
+        startActivity(Intent.createChooser(share, "Share to"));
+    }
+
+    public void transitionToFragment(int position) {
+        viewPager.setCurrentItem(position);
     }
 }
