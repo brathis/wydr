@@ -48,7 +48,7 @@ public class FrontFragment extends Fragment {
 
         final View view = inflater.inflate(R.layout.fragment_front, container, false);
 
-        final MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        final MainViewModel viewModel = ViewModelProviders.of(mainActivity).get(MainViewModel.class);
 
         Button convertButton = view.findViewById(R.id.chooseButton);
         convertButton.setOnClickListener(new View.OnClickListener() {
