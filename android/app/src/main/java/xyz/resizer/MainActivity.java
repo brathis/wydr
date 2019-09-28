@@ -1,21 +1,26 @@
 package xyz.resizer;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ImageView;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.viewpager.widget.ViewPager;
 
 import java.io.IOException;
 
+import xyz.resizer.fragment.MainFragmentPagerAdapter;
 import xyz.resizer.service.ImageResizerTask;
 import xyz.resizer.service.ImageResizerTaskParams;
 import xyz.resizer.service.WebServiceImageResizerTask;
@@ -26,33 +31,32 @@ public class MainActivity extends AppCompatActivity {
 
     static final int REQUEST_SELECT_IMAGE = 1;
 
+    static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE = 2;
+
     private MainViewModel viewModel;
 
-    private ImageResizerTask imageResizerTask;
+    private MainFragmentPagerAdapter mainFragmentPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Ensure that the necessary permissions have been granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(LOG_TAG, "WRITE_EXTERNAL_STORAGE has not been granted");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE);
+        }
+
+        // Set up layout & fragments
         setContentView(R.layout.activity_main);
+        mainFragmentPagerAdapter = new MainFragmentPagerAdapter(getSupportFragmentManager());
+        ViewPager viewPager = findViewById(R.id.pager);
+        viewPager.setAdapter(mainFragmentPagerAdapter);
 
         viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(MainViewModel.class);
 
-        // Set up observer to watch for changes of the processed bitmap
-        final Observer<Bitmap> processedBitmapObserver = new Observer<Bitmap>() {
-            @Override
-            public void onChanged(Bitmap bitmap) {
-                ImageView mainImageView = findViewById(R.id.mainImageView);
-                mainImageView.setImageBitmap(bitmap);
-            }
-        };
-
-        imageResizerTask = new WebServiceImageResizerTask(getApplicationContext());
-
         // Prompt user to select image
-        Intent imageSelectIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        imageSelectIntent.setType("image/*");
-        startActivityForResult(imageSelectIntent, REQUEST_SELECT_IMAGE);
+        startChooseImageActivity();
     }
 
     /**
@@ -68,40 +72,45 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK && data != null && data.getData() != null) {
                 Uri imageUri = data.getData();
                 try {
+                    // Load bitmap and save in view model
                     viewModel.loadRawBitmap(getContentResolver(), imageUri);
-
-                    // start the task
-                    ImageResizerTaskParams taskParams = new ImageResizerTaskParams(viewModel.getRawBitmap().getValue(),
-                            viewModel.getProcessedBitmap());
-                    imageResizerTask.execute(taskParams);
-
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "Failed to load Bitmap", e);
-                    // TODO: Show error to user
+                    Toast.makeText(getApplicationContext(), "Failed to open image", Toast.LENGTH_SHORT).show();
                 }
             }
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public void convertButtonClicked(View view) {
+        Log.d(LOG_TAG, "Convert button clicked");
+
+        // start the task
+        ImageResizerTask imageResizerTask = new WebServiceImageResizerTask(getApplicationContext());
+        ImageResizerTaskParams taskParams = new ImageResizerTaskParams(viewModel.getRawBitmap().getValue(),
+                viewModel.getProcessedBitmap());
+        imageResizerTask.execute(taskParams);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void shareButtonClicked(View view) {
+        // TODO: Launch the share intent
+        Log.d(LOG_TAG, "Share button clicked");
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        saveProcessedBitmap(viewModel.getProcessedBitmap().getValue());
+    }
+
+    protected void saveProcessedBitmap(Bitmap processedBitmap) {
+        String url = MediaStore.Images.Media.insertImage(getContentResolver(), processedBitmap, "FOO", "BAR");
+        if (url == null) {
+            Log.e(LOG_TAG, "Failed to store processed image");
+        } else {
+            Log.d(LOG_TAG, "Stored image to " + url);
         }
+    }
 
-        return super.onOptionsItemSelected(item);
+    protected void startChooseImageActivity() {
+        Intent imageSelectIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        imageSelectIntent.setType("image/*");
+        startActivityForResult(imageSelectIntent, REQUEST_SELECT_IMAGE);
     }
 }

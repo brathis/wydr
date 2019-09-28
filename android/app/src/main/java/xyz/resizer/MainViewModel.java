@@ -16,7 +16,8 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<Bitmap> processedBitmap = new MutableLiveData<>();
 
     public void loadRawBitmap(ContentResolver contentResolver, Uri uri) throws IOException {
-        rawBitmap.setValue(MediaStore.Images.Media.getBitmap(contentResolver, uri));
+        Bitmap bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri);
+        rawBitmap.setValue(bitmap);
     }
 
     public MutableLiveData<Bitmap> getRawBitmap() {
