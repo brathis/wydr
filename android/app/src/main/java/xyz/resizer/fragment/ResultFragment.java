@@ -60,6 +60,16 @@ public class ResultFragment extends Fragment {
             }
         });
 
+        final Button restartButton = view.findViewById(R.id.restartButton);
+        restartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(LOG_TAG, "Restart button clicked");
+
+                mainActivity.startOver();
+            }
+        });
+
         // Set up observer for processed bitmap
         final ImageView resultImageView = view.findViewById(R.id.resultImageView);
         final ProgressBar resultProgressBar = view.findViewById(R.id.resultProgressBar);
@@ -70,6 +80,7 @@ public class ResultFragment extends Fragment {
                     resultImageView.setImageBitmap(bitmap);
                     resultProgressBar.setVisibility(View.GONE);
                     shareButton.setVisibility(View.VISIBLE);
+                    restartButton.setVisibility(View.VISIBLE);
                 }
             }
         };
