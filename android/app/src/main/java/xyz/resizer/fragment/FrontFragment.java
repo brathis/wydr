@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,6 +65,7 @@ public class FrontFragment extends Fragment {
 
         // Set up observer for raw bitmap to update frontImageView
         final ImageView frontImageView = view.findViewById(R.id.frontImageView);
+        final TextView frontImageTextView = view.findViewById(R.id.frontImageTextView);
         final Observer<Bitmap> rawBitmapObserver = new Observer<Bitmap>() {
             @Override
             public void onChanged(Bitmap bitmap) {
@@ -71,6 +73,7 @@ public class FrontFragment extends Fragment {
                 frontImageView.setImageBitmap(bitmap);
                 frontImageView.setBackgroundColor(bitmap == null ? resources.getColor(R.color.imageViewBackground) :
                         resources.getColor(android.R.color.transparent));
+                frontImageTextView.setVisibility(bitmap == null ? View.VISIBLE : View.INVISIBLE);
                 startButton.setEnabled(bitmap != null);
             }
         };
