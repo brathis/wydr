@@ -29,7 +29,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/startButton"
+            app:layout_constraintBottom_toTopOf="@+id/aspectRatioButtonRow"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/frontTitleTextView">
@@ -58,6 +58,34 @@
                 android:textSize="24sp" />
 
     </RelativeLayout>
+
+    <LinearLayout
+            android:id="@+id/aspectRatioButtonRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/startButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/aspect_ratio_button_label_off" />
+
+        <Switch
+                android:id="@+id/aspectRatioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp" />
+
+        <TextView
+                android:id="@+id/aspectRatioOnLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/aspect_ratio_button_label_on_portrait" />
+
+    </LinearLayout>
 
     <Button
             android:id="@+id/startButton"

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -54,18 +55,20 @@ public class FrontFragment extends Fragment {
 
         // Set up click listener for start button
         final Button startButton = view.findViewById(R.id.startButton);
+        final Switch aspectRatioSwitch = view.findViewById(R.id.aspectRatioButton);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(LOG_TAG, "Start button clicked");
 
-                mainActivity.startConversion();
+                mainActivity.startConversion(!aspectRatioSwitch.isChecked());
             }
         });
 
         // Set up observer for raw bitmap to update frontImageView
         final ImageView frontImageView = view.findViewById(R.id.frontImageView);
         final TextView frontImageTextView = view.findViewById(R.id.frontImageTextView);
+        final TextView aspectRatioOnLabel = view.findViewById(R.id.aspectRatioOnLabel);
         final Observer<Bitmap> rawBitmapObserver = new Observer<Bitmap>() {
             @Override
             public void onChanged(Bitmap bitmap) {
@@ -75,6 +78,16 @@ public class FrontFragment extends Fragment {
                         resources.getColor(android.R.color.transparent));
                 frontImageTextView.setVisibility(bitmap == null ? View.VISIBLE : View.INVISIBLE);
                 startButton.setEnabled(bitmap != null);
+
+                if (bitmap != null) {
+                    if (bitmap.getHeight() >= bitmap.getWidth()) {
+                        // Portrait
+                        aspectRatioOnLabel.setText(R.string.aspect_ratio_button_label_on_portrait);
+                    } else {
+                        // Landscape
+                        aspectRatioOnLabel.setText(R.string.aspect_ratio_button_label_on_landscape);
+                    }
+                }
             }
         };
         viewModel.getRawBitmap().observe(this, rawBitmapObserver);

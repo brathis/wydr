@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">wydr</string>
-    <string name="web_service_url">http://40.127.135.227:5000/image_binary/portraittosquare</string>
+
+
+    <string name="web_service_url_portrait_to_square">http://40.127.135.227:5000/image_binary/portraittosquare</string>
+    <string name="web_service_url_landscape_to_square">http://40.127.135.227:5000/image_binary/landscapetosquare</string>
+    <string name="web_service_url_portrait_to_portrait">http://40.127.135.227:5000/image_binary/toportrait</string>
+    <string name="web_service_url_landscape_to_landscape">http://40.127.135.227:5000/image_binary/tolandscape</string>
+
+
     <string name="result_image_description">The processed image</string>
     <string name="choose_button_text">Click here to pick an image!</string>
     <string name="start_button_text">Go!</string>
@@ -9,6 +16,11 @@
     <string name="front_fragment_title">Get Started!</string>
     <string name="result_fragment_title_progress">Working...</string>
     <string name="result_fragment_title_done">All Done!</string>
+
+    <string name="aspect_ratio_button_label_off">Square</string>
+    <string name="aspect_ratio_button_label_on_portrait">Portrait</string>
+    <string name="aspect_ratio_button_label_on_landscape">Landscape</string>
+
     <string name="invalid_dimensions_title">Unsupported Image Dimensions</string>
     <string name="invalid_dimensions_message">wydr currently only supports portrait images.</string>
     <string name="invalid_dimensions_ok_button">Got it</string>

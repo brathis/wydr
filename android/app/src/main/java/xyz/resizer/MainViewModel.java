@@ -17,11 +17,6 @@ public class MainViewModel extends ViewModel {
 
     public void loadRawBitmap(ContentResolver contentResolver, Uri uri) throws IOException, InvalidDimensionsException {
         Bitmap bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri);
-
-        if (bitmap.getWidth() > bitmap.getHeight()) {
-            throw new InvalidDimensionsException();
-        }
-
         rawBitmap.setValue(bitmap);
     }
 

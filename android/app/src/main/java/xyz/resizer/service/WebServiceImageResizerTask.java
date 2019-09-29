@@ -1,6 +1,5 @@
 package xyz.resizer.service;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,18 +23,12 @@ public class WebServiceImageResizerTask extends ImageResizerTask {
 
     static final String LOG_TAG = "WebServiceImageResizerTask";
 
-    private URL webServiceUrl;
-
     private MutableLiveData<Bitmap> bitmapMutableLiveData;
 
-    public WebServiceImageResizerTask(Context context) {
-        Resources resources = context.getResources();
-        String webServiceUrlString = resources.getString(R.string.web_service_url);
-        try {
-            webServiceUrl = new URL(webServiceUrlString);
-        } catch (MalformedURLException exception) {
-            throw new RuntimeException("Web service URL is malformed: " + webServiceUrlString);
-        }
+    private Resources resources;
+
+    public WebServiceImageResizerTask(Resources resources) {
+        this.resources = resources;
     }
 
     /**
@@ -80,6 +73,8 @@ public class WebServiceImageResizerTask extends ImageResizerTask {
         result.setBitmap(bitmap);
 
         try {
+            URL webServiceUrl = urlForConversionMode(param.getConversionMode());
+
             connection = (HttpURLConnection) webServiceUrl.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "image/png");
@@ -139,6 +134,21 @@ public class WebServiceImageResizerTask extends ImageResizerTask {
             if (imageResizerTaskResult.getStatus() == ImageResizerTaskResult.Status.ERROR) {
                 Log.e(LOG_TAG, "Error message: " + imageResizerTaskResult.getErrorMessage());
             }
+        }
+    }
+
+    private URL urlForConversionMode(ImageResizerTaskParams.ConversionMode conversionMode) throws MalformedURLException {
+        switch (conversionMode) {
+            case PORTRAIT_TO_SQUARE:
+                return new URL(resources.getString(R.string.web_service_url_portrait_to_square));
+            case LANDSCAPE_TO_SQUARE:
+                return new URL(resources.getString(R.string.web_service_url_landscape_to_square));
+            case PORTRAIT_TO_PORTRAIT:
+                return new URL(resources.getString(R.string.web_service_url_portrait_to_portrait));
+            case LANDSCAPE_TO_LANDSCAPE:
+                return new URL(resources.getString(R.string.web_service_url_landscape_to_landscape));
+            default:
+                return null;
         }
     }
 }
