@@ -76,6 +76,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handle the result of the image choosing activity by launching the UCrop activity on success
+     *
+     * @param resultCode
+     * @param data
+     */
     private void handleRequestSelectImageResult(int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri imageUri = data.getData();
@@ -90,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handle the result of the UCrop activity by updating the view model
+     * @param resultCode
+     * @param data
+     */
     private void handleRequestCropResult(int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK) {
             Log.d(LOG_TAG, "Cropping successful");
@@ -111,11 +122,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Start an activity for choosing images
+     */
     public void startChoosing() {
         createChooseImageIntent();
     }
 
+    /**
+     * Clear any previously processed bitmap, then start a new conversion task and navigate to the ResultFragment
+     */
     public void startConversion() {
+        // clear the output
+        viewModel.getProcessedBitmap().setValue(null);
+
         // start the task
         ImageResizerTask imageResizerTask = new WebServiceImageResizerTask(getApplicationContext());
         ImageResizerTaskParams taskParams = new ImageResizerTaskParams(viewModel.getRawBitmap().getValue(),
@@ -126,20 +146,33 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setCurrentItem(MainFragmentPagerAdapter.RESULT_FRAGMENT);
     }
 
+    /**
+     * Save the processed image to external storage, then launch a share intent
+     */
     public void startSharing() {
         String url = saveProcessedBitmap();
-        createInstagramIntent(url);
+        createShareIntent(url);
     }
 
+    /**
+     * Clear the input image, then navigate to the FrontFragment
+     */
     public void startOver() {
-        viewModel.reset();
+        viewModel.getRawBitmap().setValue(null);
         goBack();
     }
 
+    /**
+     * Navigate to the FrontFragment
+     */
     public void goBack() {
         viewPager.setCurrentItem(MainFragmentPagerAdapter.FRONT_FRAGMENT);
     }
 
+    /**
+     * Persist the processed image file to external storage
+     * @return the URL corresponding to the persisted file
+     */
     private String saveProcessedBitmap() {
         Bitmap processedBitmap = viewModel.getProcessedBitmap().getValue();
 
@@ -154,13 +187,21 @@ public class MainActivity extends AppCompatActivity {
         return url;
     }
 
+    /**
+     * Start an activity using a GET_CONTENT request for image types
+     */
     private void createChooseImageIntent() {
         Intent imageSelectIntent = new Intent(Intent.ACTION_GET_CONTENT);
         imageSelectIntent.setType(MIME_TYPE);
         startActivityForResult(imageSelectIntent, REQUEST_SELECT_IMAGE);
     }
 
-    private void createInstagramIntent(String mediaPath) {
+    /**
+     * Start an activity using an ACTION_SEND request using the processed image file
+     *
+     * @param mediaPath
+     */
+    private void createShareIntent(String mediaPath) {
 
         // Create the new Intent using the 'Send' action.
         Intent share = new Intent(Intent.ACTION_SEND);
