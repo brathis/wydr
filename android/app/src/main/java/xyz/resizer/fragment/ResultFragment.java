@@ -112,6 +112,7 @@ public class ResultFragment extends Fragment {
             @Override
             public void onChanged(Bitmap bitmap) {
                 resultImageView.setImageBitmap(bitmap);
+                resultImageView.setVisibility(bitmap == null ? View.GONE : View.VISIBLE);
                 resultProgressBar.setVisibility(bitmap == null ? View.VISIBLE : View.INVISIBLE);
                 shareButton.setVisibility(bitmap == null ? View.GONE : View.VISIBLE);
                 restartButton.setVisibility(bitmap == null ? View.GONE : View.VISIBLE);
