@@ -51,16 +51,7 @@ public class FrontFragment extends Fragment {
 
         final MainViewModel viewModel = ViewModelProviders.of(mainActivity).get(MainViewModel.class);
 
-        Button convertButton = view.findViewById(R.id.chooseButton);
-        convertButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(LOG_TAG, "Choose button clicked");
-
-                mainActivity.startChoosing();
-            }
-        });
-
+        // Set up click listener for start button
         final Button startButton = view.findViewById(R.id.startButton);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +75,16 @@ public class FrontFragment extends Fragment {
             }
         };
         viewModel.getRawBitmap().observe(this, rawBitmapObserver);
+
+        // Set up click listener for frontImageView
+        frontImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(LOG_TAG, "Choose button clicked");
+
+                mainActivity.startChoosing();
+            }
+        });
 
         return view;
     }
