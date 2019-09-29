@@ -1,5 +1,6 @@
 package xyz.resizer.fragment;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -75,7 +76,10 @@ public class FrontFragment extends Fragment {
         final Observer<Bitmap> rawBitmapObserver = new Observer<Bitmap>() {
             @Override
             public void onChanged(Bitmap bitmap) {
+                Resources resources = getResources();
                 frontImageView.setImageBitmap(bitmap);
+                frontImageView.setBackgroundColor(bitmap == null ? resources.getColor(R.color.imageViewBackground) :
+                        resources.getColor(android.R.color.transparent));
                 startButton.setEnabled(bitmap != null);
             }
         };
