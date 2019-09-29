@@ -91,8 +91,7 @@ public class MainActivity extends AppCompatActivity {
             UCrop uCrop = UCrop.of(imageUri, editedUri);
             uCrop.start(this);
         } else {
-            Log.e(LOG_TAG, "Failed to select image");
-            Toast.makeText(getApplicationContext(), "Failed to select image", Toast.LENGTH_SHORT).show();
+            Log.d(LOG_TAG, "No image selected");
         }
     }
 

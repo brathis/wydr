@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -108,6 +109,7 @@ public class ResultFragment extends Fragment {
         // Set up observer for processed bitmap and set UI accordingly
         final ImageView resultImageView = view.findViewById(R.id.resultImageView);
         final ProgressBar resultProgressBar = view.findViewById(R.id.resultProgressBar);
+        final TextView resultTitleTextView = view.findViewById(R.id.resultTitleTextView);
         Observer<Bitmap> processedBitmapObserver = new Observer<Bitmap>() {
             @Override
             public void onChanged(Bitmap bitmap) {
@@ -116,6 +118,7 @@ public class ResultFragment extends Fragment {
                 resultProgressBar.setVisibility(bitmap == null ? View.VISIBLE : View.INVISIBLE);
                 shareButton.setVisibility(bitmap == null ? View.GONE : View.VISIBLE);
                 restartButton.setVisibility(bitmap == null ? View.GONE : View.VISIBLE);
+                resultTitleTextView.setText(bitmap == null ? R.string.result_fragment_title_progress : R.string.result_fragment_title_done);
             }
         };
         viewModel.getProcessedBitmap().observe(this, processedBitmapObserver);

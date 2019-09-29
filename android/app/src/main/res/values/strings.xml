@@ -6,4 +6,7 @@
     <string name="start_button_text">Go!</string>
     <string name="share_button_text">Share</string>
     <string name="restart_button_text">Convert Another Image</string>
+    <string name="front_fragment_title">Get Started!</string>
+    <string name="result_fragment_title_progress">Working...</string>
+    <string name="result_fragment_title_done">All Done!</string>
 </resources>
