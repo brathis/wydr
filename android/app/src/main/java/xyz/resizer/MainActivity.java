@@ -1,6 +1,7 @@
 package xyz.resizer;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -112,6 +114,21 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Failed to load Bitmap", e);
                 Toast.makeText(getApplicationContext(), "Failed to open image", Toast.LENGTH_SHORT).show();
+            } catch (InvalidDimensionsException e) {
+                Log.e(LOG_TAG, "Selected bitmap does not have portrait dimensions");
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setMessage(R.string.invalid_dimensions_message)
+                        .setTitle(R.string.invalid_dimensions_title)
+                        .setPositiveButton(R.string.invalid_dimensions_ok_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Have the user pick another image right away
+                                startChoosing();
+                            }
+                        });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
             }
 
         } else if (resultCode == UCrop.RESULT_ERROR) {

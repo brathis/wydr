@@ -15,8 +15,13 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<Bitmap> rawBitmap = new MutableLiveData<>();
     private MutableLiveData<Bitmap> processedBitmap = new MutableLiveData<>();
 
-    public void loadRawBitmap(ContentResolver contentResolver, Uri uri) throws IOException {
+    public void loadRawBitmap(ContentResolver contentResolver, Uri uri) throws IOException, InvalidDimensionsException {
         Bitmap bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri);
+
+        if (bitmap.getWidth() > bitmap.getHeight()) {
+            throw new InvalidDimensionsException();
+        }
+
         rawBitmap.setValue(bitmap);
     }
 
@@ -26,10 +31,5 @@ public class MainViewModel extends ViewModel {
 
     public MutableLiveData<Bitmap> getProcessedBitmap() {
         return processedBitmap;
-    }
-
-    public void reset() {
-        rawBitmap.setValue(null);
-        processedBitmap.setValue(null);
     }
 }

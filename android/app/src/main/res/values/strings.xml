@@ -9,4 +9,7 @@
     <string name="front_fragment_title">Get Started!</string>
     <string name="result_fragment_title_progress">Working...</string>
     <string name="result_fragment_title_done">All Done!</string>
+    <string name="invalid_dimensions_title">Unsupported Image Dimensions</string>
+    <string name="invalid_dimensions_message">wydr currently only supports portrait images.</string>
+    <string name="invalid_dimensions_ok_button">Got it</string>
 </resources>
