@@ -38,8 +38,6 @@ public class MainActivity extends AppCompatActivity {
 
     private MainViewModel viewModel;
 
-    private MainFragmentPagerAdapter mainFragmentPagerAdapter;
-
     ViewPager viewPager;
 
     @Override
@@ -54,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up layout & fragments
         setContentView(R.layout.activity_main);
-        mainFragmentPagerAdapter = new MainFragmentPagerAdapter(getSupportFragmentManager());
+        MainFragmentPagerAdapter mainFragmentPagerAdapter = new MainFragmentPagerAdapter(getSupportFragmentManager());
         viewPager = findViewById(R.id.pager);
         viewPager.setAdapter(mainFragmentPagerAdapter);
 
@@ -72,37 +70,74 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_SELECT_IMAGE) {
-            if (resultCode == RESULT_OK && data != null && data.getData() != null) {
-                Uri imageUri = data.getData();
-                Uri editedUri = Uri.fromFile(new File(getCacheDir(), "edited_temp"));
-
-                // Start uCrop
-                UCrop uCrop = UCrop.of(imageUri, editedUri);
-                uCrop.start(this);
-            } else {
-                Log.e(LOG_TAG, "Failed to select image");
-                Toast.makeText(getApplicationContext(), "Failed to select image", Toast.LENGTH_SHORT).show();
-            }
+            handleRequestSelectImageResult(resultCode, data);
         } else if (requestCode == UCrop.REQUEST_CROP) {
-            if (resultCode == RESULT_OK) {
-                Log.d(LOG_TAG, "Cropping successful");
-                final Uri resultUri = UCrop.getOutput(data);
-
-                try {
-                    // Load bitmap and save in view model
-                    viewModel.loadRawBitmap(getContentResolver(), resultUri);
-
-                } catch (IOException e) {
-                    Log.e(LOG_TAG, "Failed to load Bitmap", e);
-                    Toast.makeText(getApplicationContext(), "Failed to open image", Toast.LENGTH_SHORT).show();
-                }
-
-            } else if (resultCode == UCrop.RESULT_ERROR) {
-                final Throwable cropError = UCrop.getError(data);
-                Log.e(LOG_TAG, "UCrop exited with error", cropError);
-                Toast.makeText(getApplicationContext(), "Editing image failed", Toast.LENGTH_SHORT).show();
-            }
+            handleRequestCropResult(resultCode, data);
         }
+    }
+
+    private void handleRequestSelectImageResult(int resultCode, @Nullable Intent data) {
+        if (resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri imageUri = data.getData();
+            Uri editedUri = Uri.fromFile(new File(getCacheDir(), "edited_temp"));
+
+            // Start uCrop
+            UCrop uCrop = UCrop.of(imageUri, editedUri);
+            uCrop.start(this);
+        } else {
+            Log.e(LOG_TAG, "Failed to select image");
+            Toast.makeText(getApplicationContext(), "Failed to select image", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void handleRequestCropResult(int resultCode, @Nullable Intent data) {
+        if (resultCode == RESULT_OK) {
+            Log.d(LOG_TAG, "Cropping successful");
+            final Uri resultUri = UCrop.getOutput(data);
+
+            try {
+                // Load bitmap and save in view model
+                viewModel.loadRawBitmap(getContentResolver(), resultUri);
+
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Failed to load Bitmap", e);
+                Toast.makeText(getApplicationContext(), "Failed to open image", Toast.LENGTH_SHORT).show();
+            }
+
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+            final Throwable cropError = UCrop.getError(data);
+            Log.e(LOG_TAG, "UCrop exited with error", cropError);
+            Toast.makeText(getApplicationContext(), "Editing image failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void startChoosing() {
+        createChooseImageIntent();
+    }
+
+    public void startConversion() {
+        // start the task
+        ImageResizerTask imageResizerTask = new WebServiceImageResizerTask(getApplicationContext());
+        ImageResizerTaskParams taskParams = new ImageResizerTaskParams(viewModel.getRawBitmap().getValue(),
+                viewModel.getProcessedBitmap());
+        imageResizerTask.execute(taskParams);
+
+        // switch to the rotate / crop fragment
+        viewPager.setCurrentItem(MainFragmentPagerAdapter.RESULT_FRAGMENT);
+    }
+
+    public void startSharing() {
+        String url = saveProcessedBitmap();
+        createInstagramIntent(url);
+    }
+
+    public void startOver() {
+        viewModel.reset();
+        goBack();
+    }
+
+    public void goBack() {
+        viewPager.setCurrentItem(MainFragmentPagerAdapter.FRONT_FRAGMENT);
     }
 
     private String saveProcessedBitmap() {
@@ -119,32 +154,10 @@ public class MainActivity extends AppCompatActivity {
         return url;
     }
 
-    public void startChoosing() {
-        createChooseImageIntent();
-    }
-
-    public void startConversion() {
-        viewModel.setInProgress(true);
-
-        // start the task
-        ImageResizerTask imageResizerTask = new WebServiceImageResizerTask(getApplicationContext());
-        ImageResizerTaskParams taskParams = new ImageResizerTaskParams(viewModel.getRawBitmap().getValue(),
-                viewModel.getProcessedBitmap());
-        imageResizerTask.execute(taskParams);
-
-        // switch to the rotate / crop fragment
-        viewPager.setCurrentItem(MainFragmentPagerAdapter.RESULT_FRAGMENT);
-    }
-
     private void createChooseImageIntent() {
         Intent imageSelectIntent = new Intent(Intent.ACTION_GET_CONTENT);
         imageSelectIntent.setType(MIME_TYPE);
         startActivityForResult(imageSelectIntent, REQUEST_SELECT_IMAGE);
-    }
-
-    public void startSharing() {
-        String url = saveProcessedBitmap();
-        createInstagramIntent(url);
     }
 
     private void createInstagramIntent(String mediaPath) {
@@ -163,14 +176,5 @@ public class MainActivity extends AppCompatActivity {
 
         // Broadcast the Intent.
         startActivity(Intent.createChooser(share, "Share to"));
-    }
-
-    public void transitionToFragment(int position) {
-        viewPager.setCurrentItem(position);
-    }
-
-    public void startOver() {
-        viewModel.reset();
-        viewPager.setCurrentItem(MainFragmentPagerAdapter.FRONT_FRAGMENT);
     }
 }

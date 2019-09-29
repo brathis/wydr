@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -17,46 +16,12 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import xyz.resizer.MainActivity;
-import xyz.resizer.MainFragmentPagerAdapter;
 import xyz.resizer.MainViewModel;
 import xyz.resizer.R;
 
 public class FrontFragment extends Fragment {
 
     static final String LOG_TAG = "FrontFragment";
-
-    /**
-     * Called to do initial creation of a fragment.  This is called after
-     * {@link #onAttach(Activity)} and before
-     * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     *
-     * <p>Note that this can be called while the fragment's activity is
-     * still in the process of being created.  As such, you can not rely
-     * on things like the activity's content view hierarchy being initialized
-     * at this point.  If you want to do work once the activity itself is
-     * created, see {@link #onActivityCreated(Bundle)}.
-     *
-     * <p>Any restored child fragments will be created before the base
-     * <code>Fragment.onCreate</code> method returns.</p>
-     *
-     * @param savedInstanceState If the fragment is being re-created from
-     *                           a previous saved state, this is the state.
-     */
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        final MainActivity mainActivity = (MainActivity) requireActivity();
-
-        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                // Back to FrontFragment
-                mainActivity.transitionToFragment(MainFragmentPagerAdapter.FRONT_FRAGMENT);
-            }
-        };
-        mainActivity.getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
-    }
 
     /**
      * Called to have the fragment instantiate its user interface view.

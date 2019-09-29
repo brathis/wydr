@@ -18,7 +18,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import xyz.resizer.MainActivity;
-import xyz.resizer.MainFragmentPagerAdapter;
 import xyz.resizer.MainViewModel;
 import xyz.resizer.R;
 
@@ -53,7 +52,7 @@ public class ResultFragment extends Fragment {
             @Override
             public void handleOnBackPressed() {
                 // Back to FrontFragment
-                mainActivity.transitionToFragment(MainFragmentPagerAdapter.FRONT_FRAGMENT);
+                mainActivity.goBack();
             }
         };
         mainActivity.getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
@@ -106,50 +105,20 @@ public class ResultFragment extends Fragment {
             }
         });
 
-        // Set up observer for processed bitmap
+        // Set up observer for processed bitmap and set UI accordingly
         final ImageView resultImageView = view.findViewById(R.id.resultImageView);
         final ProgressBar resultProgressBar = view.findViewById(R.id.resultProgressBar);
         Observer<Bitmap> processedBitmapObserver = new Observer<Bitmap>() {
             @Override
             public void onChanged(Bitmap bitmap) {
-                if (bitmap != null) {
-                    viewModel.setInProgress(false);
-                    resultImageView.setImageBitmap(bitmap);
-                    resultImageView.setVisibility(View.VISIBLE);
-                    resultProgressBar.setVisibility(View.GONE);
-                    shareButton.setVisibility(View.VISIBLE);
-                    restartButton.setVisibility(View.VISIBLE);
-                }
+                resultImageView.setImageBitmap(bitmap);
+                resultProgressBar.setVisibility(bitmap == null ? View.VISIBLE : View.INVISIBLE);
+                shareButton.setVisibility(bitmap == null ? View.GONE : View.VISIBLE);
+                restartButton.setVisibility(bitmap == null ? View.GONE : View.VISIBLE);
             }
         };
         viewModel.getProcessedBitmap().observe(this, processedBitmapObserver);
 
         return view;
-    }
-
-    /**
-     * Called when the fragment is visible to the user and actively running.
-     * This is generally
-     * tied to {@link Activity#onResume() Activity.onResume} of the containing
-     * Activity's lifecycle.
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        MainActivity mainActivity = (MainActivity) requireActivity();
-        MainViewModel viewModel = ViewModelProviders.of(mainActivity).get(MainViewModel.class);
-        if (viewModel.isInProgress()) {
-            final Button shareButton = mainActivity.findViewById(R.id.shareButton);
-            final Button restartButton = mainActivity.findViewById(R.id.restartButton);
-            final ImageView resultImageView = mainActivity.findViewById(R.id.resultImageView);
-            final ProgressBar resultProgressBar = mainActivity.findViewById(R.id.resultProgressBar);
-
-            shareButton.setVisibility(View.GONE);
-            restartButton.setVisibility(View.GONE);
-            resultImageView.setImageResource(android.R.color.transparent);
-            resultImageView.setVisibility(View.INVISIBLE);
-            resultProgressBar.setVisibility(View.VISIBLE);
-        }
     }
 }
